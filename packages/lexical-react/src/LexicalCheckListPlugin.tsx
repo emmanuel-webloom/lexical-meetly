@@ -142,6 +142,7 @@ export default function ListPlugin(): null {
 
   return null;
 }
+
 let listenersCount = 0;
 
 function listenPointerDown() {

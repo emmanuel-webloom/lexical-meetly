@@ -27,6 +27,7 @@ function Editor({doc, provider, setEditor}) {
   const [editor] = useLexicalComposerContext();
 
   yjsDocMap.set('main', doc);
+
   setEditor(editor);
 
   return (
@@ -81,6 +82,7 @@ class Client {
     this._listeners = new Map();
     this._updates = [];
     this._editor = null;
+
     this.awareness = {
       getLocalState() {
         return this._awarenessState;
