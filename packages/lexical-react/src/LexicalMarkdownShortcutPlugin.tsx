@@ -1,13 +1,23 @@
-import {$ReadOnly} from 'utility-types';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import type {ElementTransformer, Transformer} from '@lexical/markdown';
 import type {LexicalNode} from 'lexical';
+
 import {registerMarkdownShortcuts, TRANSFORMERS} from '@lexical/markdown';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {useEffect} from 'react';
+
 import {
   $createHorizontalRuleNode,
   $isHorizontalRuleNode,
 } from './LexicalHorizontalRuleNode';
+
 const HR: ElementTransformer = {
   export: (node: LexicalNode) => {
     return $isHorizontalRuleNode(node) ? '***' : null;
@@ -28,14 +38,17 @@ const HR: ElementTransformer = {
   type: 'element',
 };
 const DEFAULT_TRANSFORMERS = [HR, ...TRANSFORMERS];
+
 export default function LexicalMarkdownShortcutPlugin({
   transformers = DEFAULT_TRANSFORMERS,
-}: $ReadOnly<{
+}: Readonly<{
   transformers?: Array<Transformer>;
 }>): null {
   const [editor] = useLexicalComposerContext();
+
   useEffect(() => {
     return registerMarkdownShortcuts(editor, transformers);
   }, [editor, transformers]);
+
   return null;
 }

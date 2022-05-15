@@ -1,5 +1,14 @@
-import type {TableSelection} from '@lexical/table';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+import type {InsertTableCommandPayload, TableSelection} from '@lexical/table';
 import type {ElementNode, NodeKey} from 'lexical';
+
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {
   $createTableNodeWithDimensions,
@@ -19,8 +28,10 @@ import {
 } from 'lexical';
 import {useEffect} from 'react';
 import invariant from 'shared/invariant';
-export default function TablePlugin(): React.ReactNode {
+
+export default function TablePlugin(): JSX.Element {
   const [editor] = useLexicalComposerContext();
+
   useEffect(() => {
     if (!editor.hasNodes([TableNode, TableCellNode, TableRowNode])) {
       invariant(
@@ -29,10 +40,9 @@ export default function TablePlugin(): React.ReactNode {
       );
     }
 
-    return editor.registerCommand(
+    return editor.registerCommand<InsertTableCommandPayload>(
       INSERT_TABLE_COMMAND,
-      (payload) => {
-        const {columns, rows} = payload;
+      ({columns, rows}) => {
         const selection = $getSelection();
 
         if (!$isRangeSelection(selection)) {
@@ -75,14 +85,16 @@ export default function TablePlugin(): React.ReactNode {
       COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
+
   useEffect(() => {
     const tableSelections = new Map<NodeKey, TableSelection>();
+
     return editor.registerMutationListener(TableNode, (nodeMutations) => {
       for (const [nodeKey, mutation] of nodeMutations) {
         if (mutation === 'created') {
           editor.update(() => {
             const tableElement = editor.getElementByKey(nodeKey);
-            const tableNode = $getNodeByKey(nodeKey);
+            const tableNode = $getNodeByKey<TableNode>(nodeKey);
 
             if (tableElement && tableNode) {
               const tableSelection = applyTableHandlers(
@@ -104,5 +116,6 @@ export default function TablePlugin(): React.ReactNode {
       }
     });
   }, [editor]);
+
   return null;
 }

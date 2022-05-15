@@ -1,16 +1,26 @@
-import {$ReadOnly} from 'utility-types';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {$getSelection, $isRangeSelection} from 'lexical';
 import useLayoutEffect from 'shared/useLayoutEffect';
-type Props = $ReadOnly<{
+
+type Props = Readonly<{
   scrollRef: {
     current: HTMLElement | null;
   };
 }>;
+
 export default function LexicalAutoScrollPlugin({
   scrollRef,
-}: Props): React.ReactNode {
+}: Props): JSX.Element {
   const [editor] = useLexicalComposerContext();
+
   useLayoutEffect(() => {
     return editor.registerUpdateListener(({tags, editorState}) => {
       const scrollElement = scrollRef.current;
@@ -41,5 +51,6 @@ export default function LexicalAutoScrollPlugin({
       }
     });
   }, [editor, scrollRef]);
+
   return null;
 }

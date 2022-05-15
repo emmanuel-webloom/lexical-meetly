@@ -1,9 +1,17 @@
-import {$ReadOnly} from 'utility-types';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {CSSProperties, useCallback, useState} from 'react';
 import useLayoutEffect from 'shared/useLayoutEffect';
-export type Props = $ReadOnly<{
+
+export type Props = Readonly<{
   ariaActiveDescendantID?: string;
   ariaAutoComplete?: string;
   ariaControls?: string;
@@ -22,10 +30,11 @@ export type Props = $ReadOnly<{
   readOnly?: boolean;
   role?: string;
   spellCheck?: boolean;
-  style?: StyleSheetList;
+  style?: CSSProperties;
   tabIndex?: number;
   testid?: string;
 }>;
+
 export default function LexicalContentEditable({
   ariaActiveDescendantID,
   ariaAutoComplete,
@@ -47,8 +56,9 @@ export default function LexicalContentEditable({
   style,
   tabIndex,
   testid,
-}: Props): React.MixedElement {
+}: Props): JSX.Element {
   const [editor] = useLexicalComposerContext();
+
   const [isReadOnly, setReadOnly] = useState(true);
   const ref = useCallback(
     (rootElement: null | HTMLElement) => {
@@ -56,12 +66,14 @@ export default function LexicalContentEditable({
     },
     [editor],
   );
+
   useLayoutEffect(() => {
     setReadOnly(editor.isReadOnly());
     return editor.registerReadOnlyListener((currentIsReadOnly) => {
       setReadOnly(currentIsReadOnly);
     });
   }, [editor]);
+
   return (
     <div
       aria-activedescendant={isReadOnly ? null : ariaActiveDescendantID}
@@ -76,9 +88,12 @@ export default function LexicalContentEditable({
       aria-multiline={ariaMultiline}
       aria-owns={isReadOnly ? null : ariaOwneeID}
       aria-required={ariaRequired}
-      autoCapitalize={autoCapitalize}
+      autoCapitalize={
+        autoCapitalize !== undefined ? String(autoCapitalize) : null
+      }
+      // @ts-ignore This is a valid attribute
       autoComplete={autoComplete}
-      autoCorrect={autoCorrect}
+      autoCorrect={autoCorrect !== undefined ? String(autoCorrect) : null}
       className={className}
       contentEditable={!isReadOnly}
       data-testid={testid}

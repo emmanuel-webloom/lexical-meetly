@@ -1,9 +1,19 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import LexicalContentEditable from '@lexical/react/LexicalContentEditable';
+import {LexicalEditor} from 'lexical';
 import * as React from 'react';
-import {createRoot} from 'react-dom/client';
-import ReactTestUtils from 'react-dom/test-utils';
+import {createRoot, Root} from 'react-dom/client';
+import * as ReactTestUtils from 'react-dom/test-utils';
 import * as Y from 'yjs';
+
 import {
   CollaborationPlugin,
   useCollaborationContext,
@@ -13,9 +23,12 @@ import LexicalRichTextPlugin from '../../LexicalRichTextPlugin';
 
 function Editor({doc, provider, setEditor}) {
   const {yjsDocMap} = useCollaborationContext();
+
   const [editor] = useLexicalComposerContext();
+
   yjsDocMap.set('main', doc);
   setEditor(editor);
+
   return (
     <>
       <CollaborationPlugin
@@ -32,6 +45,27 @@ function Editor({doc, provider, setEditor}) {
 }
 
 class Client {
+  _id: string;
+  _reactRoot: Root;
+  _container: HTMLDivElement;
+  _editor: LexicalEditor;
+  _connection: {
+    _clients: Client[];
+  };
+  _connected: boolean;
+  _doc: Y.Doc;
+  _awarenessState: unknown;
+
+  _listeners: Map<string, Set<(data: unknown) => void>>;
+  _updates: Uint8Array[];
+  awareness: {
+    getLocalState(): void;
+    getStates(): void;
+    off(): void;
+    on(): void;
+    setLocalState(state): void;
+  };
+
   constructor(id, connection) {
     this._id = id;
     this._reactRoot = null;
@@ -117,10 +151,17 @@ class Client {
     const reactRoot = createRoot(container);
     this._container = container;
     this._reactRoot = reactRoot;
+
     rootContainer.appendChild(container);
+
     ReactTestUtils.act(() => {
       reactRoot.render(
-        <LexicalComposer initialConfig={{}}>
+        <LexicalComposer
+          initialConfig={{
+            onError: () => {
+              throw Error();
+            },
+          }}>
           <Editor
             provider={this}
             doc={this._doc}
@@ -138,7 +179,7 @@ class Client {
 
     this._container.parentNode.removeChild(this._container);
 
-    this._contianer = null;
+    this._container = null;
   }
 
   on(type, callback) {
@@ -170,7 +211,7 @@ class Client {
   }
 
   getHTML() {
-    return this._container.firstChild.innerHTML;
+    return (this._container.firstChild as HTMLElement).innerHTML;
   }
 
   getDocJSON() {
@@ -201,6 +242,8 @@ class Client {
 }
 
 class TestConnection {
+  _clients: Map<string, Client>;
+
   constructor() {
     this._clients = new Map();
   }
@@ -217,15 +260,17 @@ class TestConnection {
 export function createTestConnection() {
   return new TestConnection();
 }
+
 export async function waitForReact(cb) {
   await ReactTestUtils.act(async () => {
     cb();
     await Promise.resolve().then();
   });
 }
+
 export function createAndStartClients(
   connector: TestConnection,
-  aContainer: any,
+  aContainer: HTMLDivElement,
   count: number,
 ): Array<Client> {
   const result = [];
@@ -239,21 +284,25 @@ export function createAndStartClients(
 
   return result;
 }
+
 export function disconnectClients(clients: Array<Client>) {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].disconnect();
   }
 }
+
 export function connectClients(clients: Array<Client>) {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].connect();
   }
 }
+
 export function stopClients(clients: Array<Client>) {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].stop();
   }
 }
+
 export function testClientsForEquality(clients: Array<Client>) {
   for (let i = 1; i < clients.length; ++i) {
     expect(clients[0].getHTML()).toEqual(clients[i].getHTML());

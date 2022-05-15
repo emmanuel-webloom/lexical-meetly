@@ -1,4 +1,11 @@
-import {$ReadOnly} from 'utility-types';
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import type {
   EditorState,
   ElementNode,
@@ -7,6 +14,7 @@ import type {
   NodeSelection,
   RangeSelection,
 } from 'lexical';
+
 import {$isMarkNode} from '@lexical/mark';
 import {
   $getRoot,
@@ -18,12 +26,12 @@ import {
 } from 'lexical';
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
-const NON_SINGLE_WIDTH_CHARS_REPLACEMENT: $ReadOnly<
-  Record<string, string>
-> = Object.freeze({
-  '\t': '\\t',
-  '\n': '\\n',
-});
+
+const NON_SINGLE_WIDTH_CHARS_REPLACEMENT: Readonly<Record<string, string>> =
+  Object.freeze({
+    '\t': '\\t',
+    '\n': '\\n',
+  });
 const NON_SINGLE_WIDTH_CHARS_REGEX = new RegExp(
   Object.keys(NON_SINGLE_WIDTH_CHARS_REPLACEMENT).join('|'),
   'g',
@@ -36,6 +44,7 @@ const SYMBOLS = Object.freeze({
   selectedChar: '^',
   selectedLine: '>',
 });
+
 export default function TreeView({
   timeTravelButtonClassName,
   timeTravelPanelSliderClassName,
@@ -50,7 +59,7 @@ export default function TreeView({
   timeTravelPanelClassName: string;
   timeTravelPanelSliderClassName: string;
   viewClassName: string;
-}): React.ReactNode {
+}): JSX.Element {
   const [timeStampedEditorStates, setTimeStampedEditorStates] = useState([]);
   const [content, setContent] = useState<string>('');
   const [timeTravelEnabled, setTimeTravelEnabled] = useState(false);
@@ -58,6 +67,7 @@ export default function TreeView({
   const treeElementRef = useRef<HTMLPreElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
     setContent(generateContent(editor.getEditorState()));
     return editor.registerUpdateListener(({editorState}) => {
@@ -76,6 +86,7 @@ export default function TreeView({
     });
   }, [timeTravelEnabled, editor]);
   const totalEditorStates = timeStampedEditorStates.length;
+
   useEffect(() => {
     if (isPlaying) {
       let timeoutId;
@@ -106,23 +117,27 @@ export default function TreeView({
       };
 
       play();
+
       return () => {
         window.clearTimeout(timeoutId);
       };
     }
   }, [timeStampedEditorStates, isPlaying, editor, totalEditorStates]);
+
   useEffect(() => {
     const element = treeElementRef.current;
 
     if (element !== null) {
-      // $FlowExpectedError[prop-missing] Internal field
+      // @ts-ignore Internal field
       element.__lexicalEditor = editor;
+
       return () => {
-        // $FlowExpectedError[prop-missing] Internal field
+        // @ts-ignore Internal field
         element.__lexicalEditor = null;
       };
     }
   }, [editor]);
+
   return (
     <div className={viewClassName}>
       {!timeTravelEnabled && totalEditorStates > 2 && (
@@ -136,8 +151,7 @@ export default function TreeView({
               setTimeTravelEnabled(true);
             }
           }}
-          className={timeTravelButtonClassName}
-        >
+          className={timeTravelButtonClassName}>
           Time Travel
         </button>
       )}
@@ -148,8 +162,7 @@ export default function TreeView({
             className={timeTravelPanelButtonClassName}
             onClick={() => {
               setIsPlaying(!isPlaying);
-            }}
-          >
+            }}>
             {isPlaying ? 'Pause' : 'Play'}
           </button>
           <input
@@ -188,8 +201,7 @@ export default function TreeView({
                 setTimeTravelEnabled(false);
                 setIsPlaying(false);
               }
-            }}
-          >
+            }}>
             Exit
           </button>
         </div>
@@ -200,18 +212,23 @@ export default function TreeView({
 
 function printRangeSelection(selection: RangeSelection): string {
   let res = '';
+
   const formatText = printFormatProperties(selection);
+
   res += `: range ${formatText !== '' ? `{ ${formatText} }` : ''}`;
+
   const anchor = selection.anchor;
   const focus = selection.focus;
   const anchorOffset = anchor.offset;
   const focusOffset = focus.offset;
+
   res += `\n  ├ anchor { key: ${anchor.key}, offset: ${
     anchorOffset === null ? 'null' : anchorOffset
   }, type: ${anchor.type} }`;
   res += `\n  └ focus { key: ${focus.key}, offset: ${
     focusOffset === null ? 'null' : focusOffset
   }, type: ${focus.type} }`;
+
   return res;
 }
 
@@ -225,8 +242,10 @@ function printGridSelection(selection: GridSelection): string {
 
 function generateContent(editorState: EditorState): string {
   let res = ' root\n';
+
   const selectionString = editorState.read(() => {
     const selection = $getSelection();
+
     visitTree($getRoot(), (node, indent) => {
       const nodeKey = node.getKey();
       const nodeKeyDisplay = `(${nodeKey})`;
@@ -235,9 +254,11 @@ function generateContent(editorState: EditorState): string {
       const idsDisplay = $isMarkNode(node)
         ? ` id: [ ${node.getIDs().join(', ')} ] `
         : '';
+
       res += `${isSelected ? SYMBOLS.selectedLine : ' '} ${indent.join(
         ' ',
       )} ${nodeKeyDisplay} ${typeDisplay} ${idsDisplay} ${printNode(node)}\n`;
+
       res += printSelectedCharsLine({
         indent,
         isSelected,
@@ -247,6 +268,7 @@ function generateContent(editorState: EditorState): string {
         typeDisplay,
       });
     });
+
     return selection === null
       ? ': null'
       : $isRangeSelection(selection)
@@ -255,12 +277,14 @@ function generateContent(editorState: EditorState): string {
       ? printGridSelection(selection)
       : printObjectSelection(selection);
   });
+
   return res + '\n selection' + selectionString;
 }
 
 function visitTree(currentNode: ElementNode, visitor, indent = []) {
   const childNodes = currentNode.getChildren();
   const childNodesLength = childNodes.length;
+
   childNodes.forEach((childNode, i) => {
     visitor(
       childNode,
@@ -425,6 +449,7 @@ function printSelectedCharsLine({
   const nodePrintSpaces = Array(nodeKeyDisplay.length + paddingLength).fill(
     ' ',
   );
+
   return (
     [
       SYMBOLS.selectedLine,
@@ -477,6 +502,7 @@ function $getSelectionStartEnd(node, selection): [number, number] {
   const numNonSingleWidthCharInSelection = (
     textContent.slice(start, end).match(NON_SINGLE_WIDTH_CHARS_REGEX) || []
   ).length;
+
   return [
     start + numNonSingleWidthCharBeforeSelection,
     end +
