@@ -6,8 +6,8 @@
  *
  */
 
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import LexicalContentEditable from '@lexical/react/LexicalContentEditable';
+import {useLexicalComposerContext} from './LexicalComposerContext';
+import LexicalContentEditable from './LexicalContentEditable';
 import {LexicalEditor} from 'lexical';
 import * as React from 'react';
 import {createRoot, Root} from 'react-dom/client';

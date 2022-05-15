@@ -6,7 +6,7 @@
  *
  */
 
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import {useLexicalComposerContext} from '@lexical/react/src/LexicalComposerContext';
 import ContentEditable from '@lexical/react/src/LexicalContentEditable';
 import RichTextPlugin from '@lexical/react/src/LexicalRichTextPlugin';
 import {

@@ -9,8 +9,8 @@
 import type {TextNode} from 'lexical';
 
 import {$createHashtagNode, HashtagNode} from '@lexical/hashtag';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import useLexicalTextEntity from '@lexical/react/useLexicalTextEntity';
+import {useLexicalComposerContext} from './LexicalComposerContext';
+import useLexicalTextEntity from './useLexicalTextEntity';
 import {useCallback, useEffect} from 'react';
 
 function getHashtagRegexStringChars(): Readonly<{

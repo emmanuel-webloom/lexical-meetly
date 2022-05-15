@@ -8,8 +8,9 @@
 
 import type {LexicalEditor} from 'lexical';
 
-import useLexicalCanShowPlaceholder from '@lexical/react/DEPRECATED_useLexicalCanShowPlaceholder';
 import {useCallback} from 'react';
+
+import useLexicalCanShowPlaceholder from './DEPRECATED_useLexicalCanShowPlaceholder';
 
 export default function useLexicalEditor(
   editor: LexicalEditor,

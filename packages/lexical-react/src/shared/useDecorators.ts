@@ -10,7 +10,7 @@ import type {LexicalEditor} from 'lexical';
 
 import {useMemo, useState} from 'react';
 import {createPortal, flushSync} from 'react-dom';
-import useLayoutEffect from 'shared/useLayoutEffect';
+import useLayoutEffect from 'shared-ts/useLayoutEffect';
 
 export default function useDecorators(
   editor: LexicalEditor,
