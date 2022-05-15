@@ -8,8 +8,9 @@
 
 import type {EditorState, LexicalEditor} from 'lexical';
 
-import {useLexicalComposerContext} from './LexicalComposerContext';
 import useLayoutEffect from 'shared-ts/useLayoutEffect';
+
+import {useLexicalComposerContext} from './LexicalComposerContext';
 
 export default function OnChangePlugin({
   ignoreInitialChange = true,

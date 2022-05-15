@@ -6,8 +6,9 @@
  *
  */
 
-import {useLexicalComposerContext} from './LexicalComposerContext';
 import {useEffect} from 'react';
+
+import {useLexicalComposerContext} from './LexicalComposerContext';
 
 export default function LexicalAutoFocusPlugin(): null {
   const [editor] = useLexicalComposerContext();
