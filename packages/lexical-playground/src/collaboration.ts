@@ -9,12 +9,11 @@
 import {WebsocketProvider} from 'y-websocket';
 import {Doc} from 'yjs';
 
-const url = new URL(window.location.href);
-const params = new URLSearchParams(url.search);
-const WEBSOCKET_ENDPOINT =
-  params.get('collabEndpoint') || 'ws://localhost:1234';
-const WEBSOCKET_SLUG = 'playground';
-const WEBSOCKET_ID = params.get('collabId') || '0';
+// const url = new URL(window.location.href);
+// const params = new URLSearchParams(url.search);
+const WEBSOCKET_ENDPOINT = 'ws://localhost:8080/';
+const WEBSOCKET_SLUG = 'notes/shared';
+// const WEBSOCKET_ID = params.get('collabId') || '11';
 
 // parent dom -> child doc
 export function createWebsocketProvider(
@@ -30,12 +29,15 @@ export function createWebsocketProvider(
     doc.load();
   }
 
-  return new WebsocketProvider(
+  const wsProvider = new WebsocketProvider(
     WEBSOCKET_ENDPOINT,
-    WEBSOCKET_SLUG + '/' + WEBSOCKET_ID + '/' + id,
+    WEBSOCKET_SLUG + '/' + id + '/',
     doc,
     {
       connect: false,
     },
   );
+  wsProvider.connect();
+
+  return wsProvider;
 }

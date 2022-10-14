@@ -34,7 +34,6 @@ import ClickableLinkPlugin from './plugins/ClickableLinkPlugin';
 import CodeActionMenuPlugin from './plugins/CodeActionMenuPlugin';
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import CollapsiblePlugin from './plugins/CollapsiblePlugin';
-import CommentPlugin from './plugins/CommentPlugin';
 import ComponentPickerPlugin from './plugins/ComponentPickerPlugin';
 import DraggableBlockPlugin from './plugins/DraggableBlockPlugin';
 import EmojiPickerPlugin from './plugins/EmojiPickerPlugin';
@@ -130,14 +129,14 @@ export default function Editor(): JSX.Element {
         <SpeechToTextPlugin />
         <AutoLinkPlugin />
         <AutoScrollPlugin scrollRef={scrollRef} />
-        <CommentPlugin
-          providerFactory={isCollab ? createWebsocketProvider : undefined}
-        />
+        {/*<CommentPlugin*/}
+        {/*  providerFactory={isCollab ? createWebsocketProvider : undefined}*/}
+        {/*/>*/}
         {isRichText ? (
           <>
             {isCollab ? (
               <CollaborationPlugin
-                id="main"
+                id="164"
                 providerFactory={createWebsocketProvider}
                 shouldBootstrap={!skipCollaborationInit}
               />
